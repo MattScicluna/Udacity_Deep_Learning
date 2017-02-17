@@ -81,3 +81,22 @@ x = x - 1000000000
 # We want our variables to have 0 mean and equal variance when possible.
 # For pixels, between [0, 255], subtract 128 and then divide by 128.
 # Generate initial weights from Gaussian with zero mean and small sigma, so it has small peaks i.e. "isn't opinionated"
+
+##############################################
+####  26/31 Validation and Test Set Size  ####
+##############################################
+
+
+#Rule of 30: A change that affects 30 examples in your validation set is significant
+
+#Assume you have 3000 examples, Change from 80% to 81% would be significant,
+#But change from 80% to 80.5% or 80.1% would not be (only 15 and 3 labels 
+#would change, respectively)
+#If you use 30000 for valivation set, then accuracy becomes significant to the 
+#1st decimal place ( >0.1% )
+
+#SGD -has following Hyperparameters: Adaptive Learning Rate, Momentum, Batch Size, Weight #Initialization.
+#When things don't work, start by lowering your learning rate.
+
+
+
