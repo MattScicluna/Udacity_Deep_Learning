@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gs
 import numpy as np
 import os, sys, tarfile, random, pickle, hashlib
-from IPython.display import display, Image
 from scipy import ndimage
 from sklearn.linear_model import LogisticRegression
 from urllib.request import urlretrieve
+from PIL import Image
 
 '''
 First, we'll download the dataset to our local machine. The data consists of characters rendered in a variety of fonts
@@ -17,7 +17,8 @@ on a 28x28 image. The labels are limited to 'A' through 'J' (10 classes). The tr
 testset 19000 labelled examples. Given these sizes, it should be possible to train models quickly on any machine.
 '''
 
-plt.ion()  # Interactive on
+# plt.ion()  # Uncomment to turn Interactive on
+
 url = 'http://commondatastorage.googleapis.com/books1000/'
 last_percent_reported = None
 data_root = '.'  # Change me to store data elsewhere
@@ -117,10 +118,11 @@ def plot_sample(folders_dir, sample_size, title=None):
             ax = fig.add_subplot(fig_gs[folders_dir.index(image_folder), image_full_link_sample.index(image_full_link)])
             ax.imshow(plt.imread(image_full_link))
             ax.set_axis_off()
+    fig.savefig(title)
 
 
-plot_sample(train_folders, 10, 'Sample of Training Data')
-plot_sample(test_folders, 10, 'Sample of Test Data')
+plot_sample(train_folders, 10, 'plots/Sample of Training Data P1')
+plot_sample(test_folders, 10, 'plots/Sample of Test Data P1')
 
 
 '''
@@ -216,10 +218,11 @@ def plot_sample_pickled(pickled_files_dir, sample_size, title=None):
                                         image_sample_inds.index(image_sample_ind)])
             ax.imshow(img_data[image_sample_ind, :, :])
             ax.set_axis_off()
+    fig.savefig(title)
 
 
-plot_sample_pickled(train_datasets, 10, 'Sample of Training Data')
-plot_sample_pickled(test_datasets, 10, 'Sample of Test Data')
+plot_sample_pickled(train_datasets, 10, 'plots/Sample of Training Data P2')
+plot_sample_pickled(test_datasets, 10, 'plots/Sample of Test Data P2')
 
 '''
 PROBLEM 3
@@ -242,6 +245,7 @@ i = -0.25
 for val in list_of_sizes:
     ax.annotate(str(val), xy=(i, val))
     i += 1
+fig.savefig("plots/Sample Sizes for Each Label P3")
 
 
 '''
@@ -342,10 +346,11 @@ def plot_sample_shuffled(dataset, label, sample_size, title=None):
         ax.imshow(dataset[i, :, :])
         ax.set_title('{}'.format(chr(label[i]+ord('A'))))
         ax.set_axis_off()
+    fig.savefig(title)
 
 
-plot_sample_shuffled(train_dataset, train_labels, 10, 'Sample of Training Data')
-plot_sample_shuffled(test_dataset, test_labels, 10, 'Sample of Test Data')
+plot_sample_shuffled(train_dataset, train_labels, 10, 'plots/Sample of Training Data P4')
+plot_sample_shuffled(test_dataset, test_labels, 10, 'plots/Sample of Test Data P4')
 
 # now to plot the figure...
 fig = plt.figure(figsize=(12, 8))
@@ -356,6 +361,7 @@ ax.set_xlabel("Label")
 ax.set_ylabel("Sample Size")
 ax.set_xticks(range(len(list_of_sizes)))
 ax.set_xticklabels(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"])  # Can use chr(label[i]+ord('A')) trick as well
+fig.savefig("plots/Sample Sizes for Each Label")
 
 '''
 Finally, let's save the data for later reuse:
@@ -504,6 +510,7 @@ for i in range(10):
     ax2.set_xticklabels(
         ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"])  # Can use chr(label[i]+ord('A')) trick as well
     ax2.yaxis.set_visible(False)
+fig.savefig("plots/Logistic Regression Predictions")
 
 #  Lets look at the features for each class
 
@@ -516,4 +523,5 @@ for i in range(10):
     ax.imshow(features[i].reshape(image_size, image_size))
     ax.set_title('{}'.format(chr(i + ord('A'))))
     ax.set_axis_off()
+fig.savefig("plots/Features from Logistic Regression")
 
