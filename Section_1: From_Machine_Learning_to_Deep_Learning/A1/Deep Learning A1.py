@@ -9,7 +9,6 @@ import os, sys, tarfile, random, pickle, hashlib
 from scipy import ndimage
 from sklearn.linear_model import LogisticRegression
 from urllib.request import urlretrieve
-from PIL import Image
 
 '''
 First, we'll download the dataset to our local machine. The data consists of characters rendered in a variety of fonts
@@ -525,3 +524,25 @@ for i in range(10):
     ax.set_axis_off()
 fig.savefig("plots/Features from Logistic Regression")
 
+#Fun side activity
+image_data = (ndimage.imread('GEB.png').astype(float) -
+                          pixel_depth / 2) / pixel_depth
+image_data = image_data[:, :, 1]
+
+GEB_pred = log_reg.predict_proba(image_data.reshape(1, -1)).round(2)
+
+fig = plt.figure()
+fig.suptitle("GEB Image Classification", fontsize=16, fontweight='bold')
+fig_gs = gs.GridSpec(1, 2)
+ax = fig.add_subplot(fig_gs[0, 0])
+ax.imshow(image_data)
+ax.set_title('GEB Image')
+ax.set_axis_off()
+ax2 = fig.add_subplot(fig_gs[0, 1])
+ax2.set_title('Classifier Predictions')
+ax2.bar(range(len(GEB_pred[0])), GEB_pred[0])
+ax2.set_xticks(range(len(GEB_pred[0])))
+ax2.set_xticklabels(
+        ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"])  # Can use chr(label[i]+ord('A')) trick as well
+ax2.yaxis.set_visible(False)
+fig.savefig("plots/GEB Image Classification")
