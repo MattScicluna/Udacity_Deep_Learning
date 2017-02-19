@@ -1,3 +1,5 @@
 *.pickle
 *.tar.gz
 *.png
+/Section_2:Deep_Neural_Networks/A3/models
+/models
