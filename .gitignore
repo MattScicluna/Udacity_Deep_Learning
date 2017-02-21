@@ -3,7 +3,9 @@
 *.png
 *.xml
 *.iml
-/models
-/.idea
-/Section_2:Deep_Neural_Networks/A3/models
-/Section_3:Convolutional_Neural_Networks/A4/models
+Section_1:From_Machine_Learning_to_Deep_Learning/A1/.idea
+Section_2:Deep_Neural_Networks/A2/.idea
+Section_2:Deep_Neural_Networks/A3/models
+Section_2:Deep_Neural_Networks/A3/.idea
+Section_3:Convolutional_Neural_Networks/A4/models
+Section_3:Convolutional_Neural_Networks/A4/.idea
