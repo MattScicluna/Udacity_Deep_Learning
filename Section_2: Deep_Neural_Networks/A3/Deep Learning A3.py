@@ -5,6 +5,8 @@ import numpy as np
 import tensorflow as tf
 #  add 'LD_LIBRARY_PATH=/usr/local/cuda/lib64', 'CUDA_HOME=usr/local/cuda' to Python environment variable
 import pickle
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gs
 
 '''
 First reload the data we generated in 1_notmnist.ipynb.
@@ -123,6 +125,19 @@ def run_model(l2_penalty, batch_size, num_relu, num_steps, Dropout_prob, learnin
                 print("Validation accuracy: %.1f%%" % accuracy(valid_prediction.eval(), valid_labels))
         print("Test accuracy: %.1f%%" % accuracy(test_prediction.eval(), test_labels))
 
+        #  Print first 100 weights
+        fig = plt.figure()
+        fig.suptitle("Features from Neural Network", fontsize=16, fontweight='bold')
+        fig_gs = gs.GridSpec(10, 10)
+        features = weights_to_hidden
+
+        for i in range(10):
+            for j in range(10):
+                ax = fig.add_subplot(fig_gs[i, j])
+                ax.imshow(session.run(tf.reshape(features[:, i*10+j], [image_size, image_size])))
+                ax.set_axis_off()
+        fig.savefig("plots/Model Plot")
+
 #run_model(l2_penalty=1e-03, batch_size=128, num_relu=1024, num_steps=3001, Dropout_prob=1, learning_rate=0.5)
 
 '''
@@ -240,5 +255,5 @@ def run_deep_model(l2_penalty, batch_size, num_layer_1, num_layer_2, num_steps,
                     print("Model saved in file: %s" % 'models/Model_at_Step_{}.ckpt'.format(step))
         print("Test accuracy: %.1f%%" % accuracy(test_prediction.eval(), test_labels))
 
-run_deep_model(l2_penalty=1e-04, batch_size=500, num_layer_1=1024, num_layer_2=512,
-               num_steps=15001, learning_rate=5e-4, Dropout_prob_l1=0.8, Dropout_prob_l2=0.8)
+#run_deep_model(l2_penalty=1e-04, batch_size=500, num_layer_1=1024, num_layer_2=512,
+#               num_steps=60001, learning_rate=5e-5, Dropout_prob_l1=0.8, Dropout_prob_l2=0.8)

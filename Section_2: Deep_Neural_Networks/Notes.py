@@ -2,8 +2,7 @@
 
 
 #  Lecture 2: Deep Neural Networks
-import numpy as np
-import matplotlib.pyplot as plt
+
 
 ########################################
 ####  4/18 Rectified Linear Units  #####

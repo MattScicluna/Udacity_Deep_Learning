@@ -525,9 +525,8 @@ for i in range(10):
 fig.savefig("plots/Features from Logistic Regression")
 
 #Fun side activity
-image_data = (ndimage.imread('GEB.png').astype(float) -
+image_data = (ndimage.imread('GEB.png', flatten=True).astype(float) -
                           pixel_depth / 2) / pixel_depth
-image_data = image_data[:, :, 1]
 
 GEB_pred = log_reg.predict_proba(image_data.reshape(1, -1)).round(2)
 
