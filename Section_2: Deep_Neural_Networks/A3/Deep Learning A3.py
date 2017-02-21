@@ -255,5 +255,5 @@ def run_deep_model(l2_penalty, batch_size, num_layer_1, num_layer_2, num_steps,
                     print("Model saved in file: %s" % 'models/Model_at_Step_{}.ckpt'.format(step))
         print("Test accuracy: %.1f%%" % accuracy(test_prediction.eval(), test_labels))
 
-#run_deep_model(l2_penalty=1e-04, batch_size=500, num_layer_1=1024, num_layer_2=512,
-#               num_steps=60001, learning_rate=5e-5, Dropout_prob_l1=0.8, Dropout_prob_l2=0.8)
+run_deep_model(l2_penalty=1e-04, batch_size=500, num_layer_1=1024, num_layer_2=512,
+               num_steps=3001, learning_rate=5e-5, Dropout_prob_l1=0.8, Dropout_prob_l2=0.8)
