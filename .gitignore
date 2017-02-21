@@ -1,5 +1,8 @@
 *.pickle
 *.tar.gz
 *.png
-/Section_2:Deep_Neural_Networks/A3/models
+*.xml
+*.iml
 /models
+/Section_2:Deep_Neural_Networks/A3/models
+/Section_3:Convolutional_Neural_Networks/A4/models
