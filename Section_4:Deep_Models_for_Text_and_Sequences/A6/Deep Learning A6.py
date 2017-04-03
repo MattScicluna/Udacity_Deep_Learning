@@ -356,6 +356,7 @@ vocabulary_size = 27**2
 num_unrollings = 10
 batch_size = 64  # must be even
 embedding_size = 128  # reduce dimension to be put into lstm cell
+keep_probability = 0.5
 
 
 class BiGramBatchGenerator(object):
@@ -413,11 +414,11 @@ with graph.as_default():
         tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
 
     # Gates for input
-    ifco_x = tf.Variable(tf.truncated_normal([embedding_size, 4 * num_nodes], -0.1, 0.1))
-    ifco_m = tf.Variable(tf.truncated_normal([num_nodes, 4 * num_nodes], -0.1, 0.1))
+    ifco_x = tf.Variable(tf.truncated_normal([embedding_size, 4*num_nodes], -0.1, 0.1))
+    ifco_m = tf.Variable(tf.truncated_normal([num_nodes, 4*num_nodes], -0.1, 0.1))
 
     # Biases
-    ifco_b = tf.Variable(tf.zeros([1, 4 * num_nodes]))
+    ifco_b = tf.Variable(tf.zeros([1, 4*num_nodes]))
 
     # Variables saving state across unrollings.
     saved_output = tf.Variable(tf.zeros([batch_size, num_nodes]), trainable=False)
@@ -427,12 +428,19 @@ with graph.as_default():
     w = tf.Variable(tf.truncated_normal([num_nodes, vocabulary_size], -0.1, 0.1))
     b = tf.Variable(tf.zeros([vocabulary_size]))
 
+    #  Dropout should only be applied to incoming hidden layer of LSTM cell
+    #  see: https: // arxiv.org / pdf / 1409.2329.pdf
+    keep_prob = tf.placeholder(tf.float32)  # Probability of neuron turning off
 
-    # Definition of the cell computation.
+    #  Definition of the cell computation.
     def lstm_cell(i, o, state):
         """Create a LSTM cell. See e.g.: http://arxiv.org/pdf/1402.1128v1.pdf
         Note that in this formulation, we omit the various connections between the
         previous state and the gates."""
+
+        # apply dropout to previous output, as per https://arxiv.org/pdf/1409.2329.pdf
+        o = tf.nn.dropout(o, keep_prob)
+
         comps = tf.matmul(i, ifco_x) + tf.matmul(o, ifco_m) + ifco_b
 
         input_gate = tf.sigmoid(comps[:, 0:num_nodes])
@@ -464,6 +472,10 @@ with graph.as_default():
     outputs = list()
     output = saved_output
     state = saved_state
+
+    # Apply dropout only to inputs as per https://arxiv.org/pdf/1409.2329.pdf
+    # with L = 0
+
     for i in train_inputs:
         output, state = lstm_cell(i, output, state)
         outputs.append(output)
@@ -505,7 +517,7 @@ with graph.as_default():
         sample_prediction = tf.nn.softmax(tf.nn.xw_plus_b(sample_output, w, b))
 
 
-num_steps = 7001
+num_steps = 10001
 summary_frequency = 100
 
 with tf.Session(graph=graph) as session:
@@ -515,6 +527,7 @@ with tf.Session(graph=graph) as session:
     for step in range(num_steps):
         batches = train_batches.next()
         feed_dict = dict()
+        feed_dict[keep_prob] = keep_probability
         for i in range(num_unrollings + 1):
             feed_dict[train_data[i]] = batches[i]
         _, l, predictions, lr = session.run(
@@ -536,7 +549,7 @@ with tf.Session(graph=graph) as session:
                     sentence = characters(feed)[0]
                     reset_sample_state.run()
                     for _ in range(79):
-                        prediction = sample_prediction.eval({sample_input: feed})
+                        prediction = sample_prediction.eval({sample_input: feed, keep_prob: 1})
                         feed = sample(prediction)
                         sentence += characters(feed)[0]
                     print(sentence)
@@ -546,6 +559,19 @@ with tf.Session(graph=graph) as session:
             valid_logprob = 0
             for _ in range(valid_size):
                 b = valid_batches.next()
-                predictions = sample_prediction.eval({sample_input: b[0]})
+                predictions = sample_prediction.eval({sample_input: b[0], keep_prob: 1})
                 valid_logprob = valid_logprob + logprob(predictions, b[1])
             print('Validation set perplexity: %.2f' % float(np.exp(valid_logprob / valid_size)))
+
+'''
+Problem 3
+(difficult!)
+Write a sequence-to-sequence LSTM which mirrors all the words in a sentence. For example, if your input is:
+the quick brown fox
+
+the model should attempt to output:
+eht kciuq nworb xof
+
+Refer to the lecture on how to put together a sequence-to-sequence model, as well as
+https://arxiv.org/pdf/1409.3215.pdf for best practices.
+'''
